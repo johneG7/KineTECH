@@ -1,0 +1,62 @@
+#include <pebble.h>
+
+//Basic Vars
+int repCount;
+int setCount;
+int restTimer;
+static int setLimit = 3;
+static int repLimit = 10;
+
+//Integer Printing
+static char timer[];
+static char sets[];
+static char reps[];
+
+enum exercise_State { EXERCISING, RESTING } state;
+
+
+static void increment_set(){
+  
+  if (setCount == setLimit){
+
+    //Back to main menu
+  }
+  else {
+    setCount++;
+    sets[0] = setCount;
+  }
+}
+
+//will be called once gesture is complete
+static void increment_reps(){
+  
+  if (repCount == repLimit){
+    increment_set();
+    state++;
+  }
+  
+  else {
+    repCount++;
+    reps[0] = repCount; 
+  } 
+}
+
+
+//init code? pulled from equation build solver
+static void init(void) {
+  window = window_create();
+  window_set_click_config_provider(window, click_config_provider);
+  window_set_window_handlers(window, (WindowHandlers) {
+	.load = window_load,
+    .unload = window_unload,
+  });
+  const bool animated = true;
+  window_stack_push(window, animated);
+}
+
+int main(void) {
+  init();
+  app_event_loop();
+  deinit();
+}
+
