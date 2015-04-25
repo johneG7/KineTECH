@@ -5,14 +5,14 @@ Window *myWindow;
 TextLayer *repCountText, *setCountText;
 short unsigned int repMax = 5;
 short unsigned int setMax = 5;
-short unsigned int reps = 0;
+short unsigned int reps = 10;
 short unsigned int sets = 0;
 short unsigned int timer = 0;
 char repBuffer[20];
 char setBuffer[20];
 char dataTester[20];
 char timerBuffer[20];
-bool movedDown = false;
+//bool movedDown = false;
 bool movedUp = false;
 
 static void tap_handler(AccelAxisType axis, int32_t direction){
@@ -40,10 +40,21 @@ static void tap_handler(AccelAxisType axis, int32_t direction){
 }
 
 static void data_handler(AccelData *data, uint32_t num_samples) {
+ 
    
-   snprintf(dataTester, sizeof(dataTester), "z:%d x:%d\n", data[0].z,data[0].x);
-    text_layer_set_text(repCountText,dataTester );
+    
+    if( ((data[0].x + data[1].x)/2 ) > 200){
+      movedUp = true;
+    }
+  
+  if(movedUp && ((data[0].x + data[1].x)/2 ) < -200 ){
+    reps--;
+    movedUp = false;
+    snprintf(repBuffer, sizeof(repBuffer), "Reps%d\n", reps );
+    text_layer_set_text(repCountText,repBuffer );
+  }
 
+  
 }
 
 void window_load(Window *myWindow){
@@ -76,7 +87,7 @@ void init(){
   /* if (TAP_NOT_DATA)
     accel_tap_service_subscribe(tap_handler); 
   */
-  uint32_t num_samples = 1;
+  uint32_t num_samples = 2;
   accel_data_service_subscribe(num_samples,data_handler); 
 }
 
